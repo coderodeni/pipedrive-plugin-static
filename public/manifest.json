@@ -14,7 +14,7 @@
     "organization_detail": "https://pipedrive-plugin-static.devikit.pl/app.js"
   },
   "oauth": {
-    "client_id": "dca00b738bcb570f",
+    "client_id": "0baffd70de987121",
     "scopes": [
       "deals:read",
       "organizations:read",
