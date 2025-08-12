@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Plugin Icons</title>
+</head>
+<body>
+    <canvas id="canvas16" width="16" height="16"></canvas>
+    <canvas id="canvas32" width="32" height="32"></canvas>
+    <canvas id="canvas48" width="48" height="48"></canvas>
+    
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#4CAF50';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Text
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${Math.floor(size/3)}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('NIP', size/2, size/2);
+            
+            // Download
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Create all icons
+        setTimeout(() => {
+            createIcon('canvas16', 16);
+            setTimeout(() => createIcon('canvas32', 32), 100);
+            setTimeout(() => createIcon('canvas48', 48), 200);
+        }, 100);
+    </script>
+</body>
+</html>

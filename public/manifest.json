@@ -25,9 +25,9 @@
     "redirect_uri": "https://pipedrive-oauth-server.devikit.pl/auth/callback"
   },
   "icons": {
-    "16": "https://pipedrive-plugin-static.devikit.pl/icons/icon-16.png",
-    "32": "https://pipedrive-plugin-static.devikit.pl/icons/icon-32.png",
-    "48": "https://pipedrive-plugin-static.devikit.pl/icons/icon-48.png"
+    "16": "https://pipedrive-plugin-static.devikit.pl/icons/icon.svg",
+    "32": "https://pipedrive-plugin-static.devikit.pl/icons/icon.svg",
+    "48": "https://pipedrive-plugin-static.devikit.pl/icons/icon.svg"
   },
   "settings": {
     "license_key": {
