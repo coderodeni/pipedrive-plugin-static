@@ -11,7 +11,7 @@
     "organization_fields:write"
   ],
   "entry_points": {
-    "organization_detail": "https://pipedrive-plugin.railway.app/app.js"
+    "organization_detail": "https://pipedrive-plugin-static.devikit.pl/app.js"
   },
   "oauth": {
     "client_id": "dca00b738bcb570f",
@@ -25,9 +25,9 @@
     "redirect_uri": "https://pipedrive-oauth-server.devikit.pl/auth/callback"
   },
   "icons": {
-    "16": "https://pipedrive-plugin.railway.app/icons/icon-16.png",
-    "32": "https://pipedrive-plugin.railway.app/icons/icon-32.png",
-    "48": "https://pipedrive-plugin.railway.app/icons/icon-48.png"
+    "16": "https://pipedrive-plugin-static.devikit.pl/icons/icon-16.png",
+    "32": "https://pipedrive-plugin-static.devikit.pl/icons/icon-32.png",
+    "48": "https://pipedrive-plugin-static.devikit.pl/icons/icon-48.png"
   },
   "settings": {
     "license_key": {
