@@ -1,0 +1,364 @@
+/**
+ * Style CSS dla pluginu NIP Field z GUS
+ * Kompatybilne z UI Pipedrive
+ */
+
+/* Reset i podstawowe style */
+.nip-gus-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.nip-gus-container * {
+    box-sizing: border-box;
+}
+
+/* Kontener główny */
+.nip-gus-field {
+    margin-bottom: 1rem;
+}
+
+.nip-gus-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.nip-gus-field input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nip-gus-field input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.nip-gus-field input.is-valid {
+    border-color: #28a745;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73 1.11 1.11a.71.71 0 0 0 1.02 0L8 4.27a.71.71 0 0 0 0-1.02L7.02 2.27a.71.71 0 0 0-1.02 0L3.74 4.53 1.98 2.77a.71.71 0 0 0-1.02 0L.27 3.75a.71.71 0 0 0 0 1.02z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+}
+
+.nip-gus-field input.is-invalid {
+    border-color: #dc3545;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 2.4 2.4m0-2.4L5.8 7'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+}
+
+/* Przycisk GUS */
+.gus-button-container {
+    margin-top: 1rem;
+}
+
+.nip-gus-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #007bff;
+    background-color: transparent;
+    color: #007bff;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 42px;
+}
+
+.nip-gus-button:hover:not(:disabled) {
+    background-color: #007bff;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.nip-gus-button:active {
+    transform: translateY(0);
+}
+
+.nip-gus-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.nip-gus-button.nip-gus-button--loading {
+    pointer-events: none;
+}
+
+.nip-gus-button--success {
+    border-color: #28a745;
+    background-color: #28a745;
+    color: white;
+}
+
+.nip-gus-button--error {
+    border-color: #dc3545;
+    background-color: #dc3545;
+    color: white;
+}
+
+.nip-gus-button .button-icon {
+    flex-shrink: 0;
+}
+
+.nip-gus-button .nip-gus-spinner {
+    margin-right: 0.5rem;
+}
+
+/* Komunikaty */
+.nip-gus-error {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #dc3545;
+}
+
+.nip-gus-success {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #28a745;
+}
+
+.gus-message {
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.gus-message.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.gus-message.alert-danger {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* Walidator licencji */
+.nip-gus-license {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.nip-gus-license h6 {
+    margin: 0 0 1rem 0;
+    color: #495057;
+    font-weight: 600;
+}
+
+.nip-gus-license .input-group {
+    margin-bottom: 1rem;
+}
+
+.nip-gus-license input {
+    font-family: 'Courier New', monospace;
+}
+
+.license-status {
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.license-status.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.license-status strong {
+    font-weight: 600;
+}
+
+/* Spinner */
+.nip-gus-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: nip-gus-spin 0.75s linear infinite;
+}
+
+@keyframes nip-gus-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .nip-gus-container {
+        font-size: 16px;
+        /* Lepsze dla mobile */
+    }
+
+    .nip-gus-field input {
+        padding: 1rem;
+        /* Większe padding na mobile */
+    }
+
+    .nip-gus-button {
+        width: 100%;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .nip-gus-license {
+        padding: 1rem;
+    }
+}
+
+/* Integracja z Pipedrive UI */
+.pipedrive-ui .nip-gus-container {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.pipedrive-ui .nip-gus-field label {
+    color: #6c757d;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pipedrive-ui .nip-gus-button {
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .nip-gus-container {
+        color: #e9ecef;
+    }
+
+    .nip-gus-field label {
+        color: #adb5bd;
+    }
+
+    .nip-gus-field input {
+        background-color: #343a40;
+        border-color: #495057;
+        color: #e9ecef;
+    }
+
+    .nip-gus-field input:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 2px rgba(128, 189, 255, 0.25);
+    }
+
+    .nip-gus-license {
+        background-color: #343a40;
+        border-color: #495057;
+    }
+
+    .gus-message.alert-success {
+        background-color: #155724;
+        border-color: #0f4229;
+        color: #d4edda;
+    }
+
+    .gus-message.alert-danger {
+        background-color: #721c24;
+        border-color: #842029;
+        color: #f8d7da;
+    }
+}
+
+/* Animacje */
+.nip-gus-field {
+    animation: nip-gus-fadeIn 0.3s ease-in-out;
+}
+
+.gus-message {
+    animation: nip-gus-slideIn 0.3s ease-out;
+}
+
+@keyframes nip-gus-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes nip-gus-slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Focus management */
+.nip-gus-container :focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Print styles */
+@media print {
+    .nip-gus-container {
+        background: none !important;
+        box-shadow: none !important;
+    }
+
+    .nip-gus-button {
+        display: none;
+    }
+
+    .gus-message {
+        border: 1px solid #000 !important;
+    }
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIP Field z GUS - Plugin Pipedrive</title>
+    <meta name="description"
+        content="Plugin Pipedrive do automatycznego pobierania danych firm z rejestru GUS na podstawie numeru NIP">
+
+    <!-- Bootstrap CSS dla zgodności z Pipedrive -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Meta tags dla Pipedrive -->
+    <meta name="pipedrive-plugin" content="nip-field-gus">
+    <meta name="pipedrive-plugin-version" content="1.0.0">
+</head>
+
+<body>
+    <!-- Kontener dla pluginu - będzie wypełniony przez JavaScript -->
+    <div id="nip-gus-plugin-root" class="pipedrive-ui">
+        <!-- Plugin zostanie załadowany tutaj -->
+    </div>
+
+    <!-- Fallback content dla przypadku gdy JavaScript jest wyłączony -->
+    <noscript>
+        <div class="container mt-5">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">JavaScript jest wymagany</h4>
+                <p>Ten plugin wymaga włączonego JavaScript aby działać poprawnie.</p>
+                <hr>
+                <p class="mb-0">Proszę włączyć JavaScript w przeglądarce i odświeżyć stronę.</p>
+            </div>
+        </div>
+    </noscript>
+
+    <!-- Loader/Spinner podczas ładowania -->
+    <div id="loading-spinner" style="display: none;">
+        <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Ładowanie...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error fallback -->
+    <div id="error-fallback" style="display: none;">
+        <div class="container mt-3">
+            <div class="alert alert-danger" role="alert">
+                <h5 class="alert-heading">Błąd ładowania pluginu</h5>
+                <p>Wystąpił błąd podczas ładowania pluginu NIP Field z GUS.</p>
+                <hr>
+                <button class="btn btn-outline-danger" onclick="window.location.reload()">
+                    Odśwież stronę
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Podstawowa obsługa błędów
+        window.addEventListener('error', function (event) {
+            console.error('Plugin error:', event.error);
+
+            // Pokaż fallback po błędzie
+            const errorFallback = document.getElementById('error-fallback');
+            if (errorFallback) {
+                errorFallback.style.display = 'block';
+            }
+
+            // Ukryj spinner
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+        });
+
+        // Podstawowa detekcja Pipedrive
+        window.addEventListener('DOMContentLoaded', function () {
+            // Sprawdź czy jesteśmy w kontekście Pipedrive
+            if (window.location.hostname.includes('pipedrive.com') ||
+                window.Pipedrive ||
+                document.querySelector('[data-pipedrive]')) {
+
+                document.body.classList.add('pipedrive-context');
+            }
+
+            // Pokaż spinner podczas ładowania
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) {
+                spinner.style.display = 'block';
+            }
+
+            // Ukryj spinner po 10 sekundach (fallback)
+            setTimeout(function () {
+                if (spinner) {
+                    spinner.style.display = 'none';
+                }
+            }, 10000);
+        });
+
+        // Komunikacja z Pipedrive SDK
+        if (window.Pipedrive && window.Pipedrive.ready) {
+            window.Pipedrive.ready(function () {
+                console.log('Pipedrive SDK is ready');
+                document.body.classList.add('pipedrive-ready');
+            });
+        }
+    </script>
+</body>
+
+</html>
