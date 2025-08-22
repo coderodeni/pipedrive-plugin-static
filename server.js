@@ -45,16 +45,16 @@ app.get('/app.js', (req, res) => {
 // HTTP Basic Auth middleware for JSON Panel
 function basicAuth(req, res, next) {
     const auth = req.headers.authorization;
-    
+
     if (!auth || !auth.startsWith('Basic ')) {
         res.set('WWW-Authenticate', 'Basic realm="JSON Panel"');
         return res.status(401).send('Authentication required');
     }
-    
+
     const credentials = Buffer.from(auth.slice(6), 'base64').toString().split(':');
     const username = credentials[0];
     const password = credentials[1];
-    
+
     // Check credentials
     if (username === 'pipedrive-plugin' && password === 'gus-panel-2025') {
         next();
@@ -67,6 +67,27 @@ function basicAuth(req, res, next) {
 // Protected route for JSON Panel configuration
 app.get('/nip-gus-panel.json', basicAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'nip-gus-panel.json'));
+});
+
+// Protected route for JSON Panel data
+app.get('/api/json-panel/data', basicAuth, (req, res) => {
+    // Pobierz parametry z query
+    const { resource, selectedIds, userId, companyId } = req.query;
+    
+    // Zwróć przykładowe dane zgodne z JSON Schema
+    const responseData = {
+        "data": {
+            "id": 1,
+            "header": "🏛️ NIP Field z GUS",
+            "description": "Automatyczne pobieranie danych firmy z rejestru GUS na podstawie numeru NIP",
+            "nip_field": "Wprowadź numer NIP organizacji",
+            "status": "Gotowy do pobierania danych",
+            "company_name": "Przykładowa firma",
+            "address": "ul. Przykładowa 1, 00-000 Warszawa"
+        }
+    };
+    
+    res.json(responseData);
 });
 
 // Route for styles
