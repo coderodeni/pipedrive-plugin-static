@@ -10,10 +10,12 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     
-    // Allow embedding in iframe from Pipedrive domains
+    // Allow embedding in iframe from any domain (for Pipedrive proxy)
+    res.removeHeader('X-Frame-Options');
+    res.removeHeader('Content-Security-Policy');
+    
+    // Explicitly allow iframe embedding
     res.header('X-Frame-Options', 'ALLOWALL');
-    res.removeHeader('X-Frame-Options'); // Remove restrictive header
-    res.header('Content-Security-Policy', "frame-ancestors 'self' *.pipedrive.com;");
 
     if (req.method === 'OPTIONS') {
         res.sendStatus(200);
