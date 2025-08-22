@@ -20,6 +20,6 @@ setTimeout(() => {
         font-weight: bold;
     `;
     body.appendChild(testDiv);
-    
+
     console.log('🎯 Test div added to page');
 }, 1000);

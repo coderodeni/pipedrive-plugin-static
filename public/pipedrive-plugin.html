@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NIP Field z GUS</title>
+    
+    <!-- Pipedrive SDK -->
+    <script src="https://cdn.pipedrive.com/web-app/assets/sdk.js"></script>
+    
     <style>
         * {
             box-sizing: border-box;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
@@ -17,13 +23,15 @@
             font-size: 14px;
             line-height: 1.5;
         }
+
         .plugin-container {
             background: #ffffff;
             border: 1px solid #e1e5e9;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
+
         .plugin-header {
             display: flex;
             align-items: center;
@@ -31,35 +39,42 @@
             padding-bottom: 12px;
             border-bottom: 1px solid #e1e5e9;
         }
+
         .plugin-title {
             color: #1a1a1a;
             margin: 0;
             font-size: 16px;
             font-weight: 600;
         }
+
         .plugin-icon {
             margin-right: 8px;
             font-size: 18px;
         }
+
         .status-message {
             padding: 12px 16px;
             border-radius: 6px;
             margin-bottom: 16px;
             font-size: 13px;
         }
+
         .status-success {
             background: #f0f9f0;
             border: 1px solid #d4edda;
             color: #155724;
         }
+
         .status-warning {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
             color: #856404;
         }
+
         .form-group {
             margin-bottom: 16px;
         }
+
         .form-label {
             display: block;
             margin-bottom: 6px;
@@ -67,6 +82,7 @@
             color: #1a1a1a;
             font-size: 13px;
         }
+
         .form-input {
             width: 100%;
             max-width: 250px;
@@ -76,11 +92,13 @@
             font-size: 14px;
             transition: border-color 0.2s;
         }
+
         .form-input:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -93,20 +111,25 @@
             transition: all 0.2s;
             text-decoration: none;
         }
+
         .btn-primary {
             background: #3b82f6;
             color: white;
         }
+
         .btn-primary:hover {
             background: #2563eb;
         }
+
         .btn-success {
             background: #10b981;
             color: white;
         }
+
         .btn-success:hover {
             background: #059669;
         }
+
         .debug-info {
             margin-top: 20px;
             padding: 12px;
@@ -118,40 +141,35 @@
         }
     </style>
 </head>
+
 <body>
     <div class="plugin-container">
         <div class="plugin-header">
             <span class="plugin-icon">🏢</span>
             <h2 class="plugin-title">NIP Field z GUS</h2>
         </div>
-        
+
         <div id="status-container">
             <div class="status-message status-success">
                 ✅ Plugin został pomyślnie załadowany
             </div>
         </div>
-        
+
         <div class="form-group">
             <label class="form-label" for="nip-input">Numer NIP organizacji:</label>
-            <input 
-                type="text" 
-                id="nip-input" 
-                class="form-input"
-                placeholder="XXX-XXX-XX-XX" 
-                maxlength="12"
-            >
+            <input type="text" id="nip-input" class="form-input" placeholder="XXX-XXX-XX-XX" maxlength="12">
         </div>
-        
+
         <div class="form-group">
             <button id="auth-btn" class="btn btn-primary">
                 🔐 Autoryzuj z Pipedrive
             </button>
-            
+
             <button id="fetch-btn" class="btn btn-success" style="margin-left: 8px; display: none;">
                 📊 Pobierz dane z GUS
             </button>
         </div>
-        
+
         <div id="debug-info" class="debug-info">
             <strong>Debug Info:</strong><br>
             Status: Inicjalizacja...<br>
@@ -163,7 +181,7 @@
 
     <script>
         console.log('🚀 NIP GUS Plugin starting...');
-        
+
         // Komunikacja z parent window (Pipedrive)
         function notifyParent(message) {
             try {
@@ -174,7 +192,7 @@
                 console.log('Cannot communicate with parent:', e);
             }
         }
-        
+
         // Ustaw wysokość iframe
         function setIframeHeight(height) {
             document.body.style.height = height + 'px';
@@ -184,52 +202,82 @@
             });
             document.getElementById('iframe-height').textContent = height;
         }
+
+                // Inicjalizacja Pipedrive SDK
+        function initPipedriveSDK() {
+            return new Promise((resolve, reject) => {
+                if (typeof PipedriveApp !== 'undefined') {
+                    console.log('🔧 Initializing Pipedrive SDK...');
+                    window.pipedrive = new PipedriveApp();
+                    
+                    pipedrive.initialize().then(() => {
+                        console.log('✅ Pipedrive SDK initialized');
+                        resolve(pipedrive);
+                    }).catch((error) => {
+                        console.error('❌ Pipedrive SDK initialization failed:', error);
+                        reject(error);
+                    });
+                } else {
+                    console.error('❌ PipedriveApp not available');
+                    reject(new Error('PipedriveApp not available'));
+                }
+            });
+        }
         
         // Inicjalizacja
-        function init() {
+        async function init() {
             console.log('🔧 Initializing plugin...');
+            
+            try {
+                // Inicjalizuj Pipedrive SDK
+                await initPipedriveSDK();
+                updateStatus('Pipedrive SDK zainicjalizowany', 'success');
+            } catch (error) {
+                console.warn('Pipedrive SDK initialization failed, continuing without it');
+                updateStatus('Plugin działa bez Pipedrive SDK', 'warning');
+            }
             
             // Ustaw wysokość
             setIframeHeight(450);
-            
+
             // Aktualizuj debug info
             document.getElementById('current-url').textContent = window.location.href;
-            
+
             // Sprawdź session
             checkSession();
-            
+
             // Event listenery
             setupEventListeners();
-            
+
             // Powiadom parent o gotowości
             notifyParent({
                 type: 'ready',
                 plugin: 'nip-gus-plugin'
             });
-            
+
             updateStatus('Plugin gotowy do użycia', 'success');
             console.log('✅ Plugin initialization complete');
         }
-        
+
         function checkSession() {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionFromUrl = urlParams.get('nip_gus_session');
             const sessionId = localStorage.getItem('nip_gus_session_id');
-            
+
             let sessionStatus = 'Brak sesji';
-            
+
             if (sessionFromUrl) {
                 sessionStatus = `Nowa sesja z URL: ${sessionFromUrl.substring(0, 15)}...`;
                 localStorage.setItem('nip_gus_session_id', sessionFromUrl);
-                
+
                 // Usuń z URL
                 const newUrl = new URL(window.location);
                 newUrl.searchParams.delete('nip_gus_session');
                 window.history.replaceState({}, '', newUrl);
-                
+
                 updateStatus('Sesja OAuth została zapisana', 'success');
                 document.getElementById('fetch-btn').style.display = 'inline-flex';
-                
+
             } else if (sessionId) {
                 sessionStatus = `Zapisana sesja: ${sessionId.substring(0, 15)}...`;
                 document.getElementById('fetch-btn').style.display = 'inline-flex';
@@ -237,46 +285,46 @@
             } else {
                 updateStatus('Wymagana autoryzacja OAuth', 'warning');
             }
-            
+
             document.getElementById('session-status').textContent = sessionStatus;
         }
-        
+
         function setupEventListeners() {
             // Format NIP podczas pisania
-            document.getElementById('nip-input').addEventListener('input', function(e) {
+            document.getElementById('nip-input').addEventListener('input', function (e) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 10) value = value.substring(0, 10);
-                
+
                 if (value.length > 6) {
                     value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6, 8) + '-' + value.substring(8);
                 } else if (value.length > 3) {
                     value = value.substring(0, 3) + '-' + value.substring(3);
                 }
-                
+
                 e.target.value = value;
             });
-            
+
             // Przycisk autoryzacji
             document.getElementById('auth-btn').addEventListener('click', handleAuth);
-            
+
             // Przycisk pobierania danych
             document.getElementById('fetch-btn').addEventListener('click', handleFetchData);
         }
-        
+
         function handleAuth() {
             console.log('🔐 Starting OAuth authorization...');
-            
+
             const hostname = window.location.hostname;
             const match = hostname.match(/^(.+)\.pipedrive\.com$/);
             const companyDomain = match ? match[1] : null;
-            
+
             if (companyDomain) {
                 const currentUrl = window.location.href;
                 const authUrl = `https://pipedrive-oauth-server.devikit.pl/auth/authorize?company_domain=${companyDomain}&return_url=${encodeURIComponent(currentUrl)}`;
-                
+
                 console.log('Redirecting to OAuth:', authUrl);
                 updateStatus('Przekierowywanie do autoryzacji...', 'warning');
-                
+
                 // Użyj window.top dla iframe
                 window.top.location.href = authUrl;
             } else {
@@ -284,19 +332,19 @@
                 updateStatus('Błąd: Nie można określić domeny firmy', 'error');
             }
         }
-        
+
         function handleFetchData() {
             console.log('📊 Fetching GUS data...');
             updateStatus('Funkcja pobierania danych z GUS - w przygotowaniu', 'warning');
         }
-        
+
         function updateStatus(message, type) {
             const container = document.getElementById('status-container');
-            const className = type === 'success' ? 'status-success' : 
-                            type === 'warning' ? 'status-warning' : 'status-error';
-            
+            const className = type === 'success' ? 'status-success' :
+                type === 'warning' ? 'status-warning' : 'status-error';
+
             container.innerHTML = `<div class="status-message ${className}">${message}</div>`;
-            
+
             // Aktualizuj debug info
             const debugStatus = document.getElementById('debug-info');
             debugStatus.innerHTML = debugStatus.innerHTML.replace(
@@ -304,20 +352,21 @@
                 `Status: ${message}`
             );
         }
-        
+
         // Inicjalizuj po załadowaniu DOM
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
             init();
         }
-        
+
         // Obsługa komunikatów od parent window
-        window.addEventListener('message', function(event) {
+        window.addEventListener('message', function (event) {
             console.log('Message from parent:', event.data);
         });
-        
+
         console.log('📦 NIP GUS Plugin script loaded');
     </script>
 </body>
+
 </html>

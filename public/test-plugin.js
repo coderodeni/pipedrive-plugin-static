@@ -16,11 +16,11 @@ if (typeof window !== 'undefined') {
 // Funkcja testowa do wstrzyknięcia prostego UI
 function createTestPlugin() {
     console.log('🔧 Creating test plugin UI...');
-    
+
     // Znajdź kontener
     const containers = [
         '.organization-fields',
-        '.custom-fields', 
+        '.custom-fields',
         '.details-section',
         '.organization-form',
         '.organization-details',
@@ -28,7 +28,7 @@ function createTestPlugin() {
         '.content-area',
         '.organization-view'
     ];
-    
+
     let container = null;
     for (const selector of containers) {
         container = document.querySelector(selector);
@@ -37,12 +37,12 @@ function createTestPlugin() {
             break;
         }
     }
-    
+
     if (!container) {
         container = document.body;
         console.log('⚠️ Using body as fallback container');
     }
-    
+
     // Utwórz testowy box
     const testBox = document.createElement('div');
     testBox.id = 'nip-gus-test-plugin';
@@ -54,7 +54,7 @@ function createTestPlugin() {
         margin: 20px 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     `;
-    
+
     testBox.innerHTML = `
         <h4 style="color: #007bff; margin: 0 0 15px 0;">
             🎯 NIP Field z GUS - Test Plugin
@@ -75,16 +75,16 @@ function createTestPlugin() {
             Status: Plugin załadowany ✅
         </div>
     `;
-    
+
     // Wstrzyknij do kontenera
     container.appendChild(testBox);
     console.log('✅ Test plugin UI injected successfully');
-    
+
     // Dodaj event listenery
     const nipField = document.getElementById('test-nip-field');
     const authBtn = document.getElementById('test-authorize-btn');
     const status = document.getElementById('test-status');
-    
+
     if (nipField) {
         nipField.addEventListener('input', (e) => {
             const value = e.target.value;
@@ -92,12 +92,12 @@ function createTestPlugin() {
             status.textContent = `Status: Wprowadzono NIP: ${value}`;
         });
     }
-    
+
     if (authBtn) {
         authBtn.addEventListener('click', () => {
             console.log('🔐 Test authorization clicked');
             status.innerHTML = 'Status: <strong>Test autoryzacji kliknięty!</strong> 🚀';
-            
+
             // Symuluj sprawdzenie localStorage
             const sessionId = localStorage.getItem('nip_gus_session_id');
             if (sessionId) {
@@ -107,53 +107,53 @@ function createTestPlugin() {
             }
         });
     }
-    
+
     return testBox;
 }
 
 // Funkcja inicjalizacji
 function initTestPlugin() {
     console.log('🎬 Initializing test plugin...');
-    
+
     // Sprawdź czy jesteśmy na stronie organizacji
-    const isOrgPage = window.location.pathname.includes('/organization/') || 
-                     window.location.pathname.includes('/organizations/');
-    
+    const isOrgPage = window.location.pathname.includes('/organization/') ||
+        window.location.pathname.includes('/organizations/');
+
     if (!isOrgPage) {
         console.log('⚠️ Not on organization page, skipping plugin initialization');
         return;
     }
-    
+
     console.log('✅ On organization page, proceeding with initialization');
-    
+
     // Sprawdź czy plugin już istnieje
     if (document.getElementById('nip-gus-test-plugin')) {
         console.log('⚠️ Test plugin already exists, removing old instance');
         document.getElementById('nip-gus-test-plugin').remove();
     }
-    
+
     // Utwórz plugin
     const plugin = createTestPlugin();
-    
+
     // Sprawdź session z URL
     const urlParams = new URLSearchParams(window.location.search);
     const sessionFromUrl = urlParams.get('nip_gus_session');
-    
+
     if (sessionFromUrl) {
         console.log('🔑 Found session in URL:', sessionFromUrl.substring(0, 20) + '...');
         localStorage.setItem('nip_gus_session_id', sessionFromUrl);
-        
+
         // Usuń z URL
         const newUrl = new URL(window.location);
         newUrl.searchParams.delete('nip_gus_session');
         window.history.replaceState({}, '', newUrl);
-        
+
         const status = document.getElementById('test-status');
         if (status) {
             status.innerHTML = 'Status: Session zapisana z URL ✅';
         }
     }
-    
+
     console.log('🎉 Test plugin initialization complete!');
 }
 

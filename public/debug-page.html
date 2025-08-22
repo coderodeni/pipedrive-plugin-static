@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             padding: 20px;
             background: #f8f9fa;
         }
+
         .debug-container {
             background: white;
             border: 2px solid #007bff;
@@ -19,6 +21,7 @@
             max-width: 600px;
             margin: 0 auto;
         }
+
         .status {
             background: #d4edda;
             border: 1px solid #c3e6cb;
@@ -27,6 +30,7 @@
             border-radius: 4px;
             margin: 10px 0;
         }
+
         .error {
             background: #f8d7da;
             border: 1px solid #f5c6cb;
@@ -37,44 +41,46 @@
         }
     </style>
 </head>
+
 <body>
     <div class="debug-container">
         <h2>🎯 NIP GUS Plugin - Debug Page</h2>
         <div class="status">
             ✅ HTML strona została załadowana przez Pipedrive
         </div>
-        
+
         <div id="js-status" class="error">
             ❌ JavaScript jeszcze się nie załadował
         </div>
-        
+
         <div id="pipedrive-status" class="error">
             ❌ Pipedrive SDK nie został wykryty
         </div>
-        
+
         <div id="url-info">
             <strong>URL:</strong> <span id="current-url">Ładowanie...</span>
         </div>
-        
+
         <div id="session-info">
             <strong>Session:</strong> <span id="session-status">Sprawdzanie...</span>
         </div>
-        
-        <button onclick="testOAuth()" style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+
+        <button onclick="testOAuth()"
+            style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
             Test OAuth
         </button>
     </div>
 
     <script>
         console.log('🔥 DEBUG PAGE: JavaScript loading...');
-        
+
         // Aktualizuj status JS
         document.getElementById('js-status').innerHTML = '✅ JavaScript został załadowany';
         document.getElementById('js-status').className = 'status';
-        
+
         // Pokaż URL
         document.getElementById('current-url').textContent = window.location.href;
-        
+
         // Sprawdź Pipedrive SDK
         if (window.Pipedrive) {
             document.getElementById('pipedrive-status').innerHTML = '✅ Pipedrive SDK wykryty';
@@ -83,12 +89,12 @@
         } else {
             console.log('❌ Pipedrive SDK not available');
         }
-        
+
         // Sprawdź session
         const sessionId = localStorage.getItem('nip_gus_session_id');
         const urlParams = new URLSearchParams(window.location.search);
         const sessionFromUrl = urlParams.get('nip_gus_session');
-        
+
         let sessionStatus = 'Brak sesji';
         if (sessionFromUrl) {
             sessionStatus = `URL: ${sessionFromUrl.substring(0, 20)}...`;
@@ -96,25 +102,25 @@
         } else if (sessionId) {
             sessionStatus = `LocalStorage: ${sessionId.substring(0, 20)}...`;
         }
-        
+
         document.getElementById('session-status').textContent = sessionStatus;
-        
+
         // Test OAuth function
         function testOAuth() {
             console.log('🔐 Testing OAuth...');
             alert('Test OAuth clicked! Check console for details.');
-            
+
             // Sprawdź domenę
             const hostname = window.location.hostname;
             const match = hostname.match(/^(.+)\.pipedrive\.com$/);
             const companyDomain = match ? match[1] : null;
-            
+
             console.log('Company domain:', companyDomain);
-            
+
             if (companyDomain) {
                 const authUrl = `https://pipedrive-oauth-server.devikit.pl/auth/authorize?company_domain=${companyDomain}&return_url=${encodeURIComponent(window.location.href)}`;
                 console.log('Auth URL:', authUrl);
-                
+
                 if (confirm('Przekierować do OAuth?')) {
                     window.location.href = authUrl;
                 }
@@ -122,11 +128,12 @@
                 alert('Nie można określić domeny firmy');
             }
         }
-        
+
         // Dodaj do globalnego scope dla debugowania
         window.testOAuth = testOAuth;
-        
+
         console.log('🎉 DEBUG PAGE: Initialization complete');
     </script>
 </body>
+
 </html>
