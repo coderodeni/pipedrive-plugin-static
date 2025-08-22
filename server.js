@@ -9,11 +9,11 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    
+
     // Allow embedding in iframe from any domain (for Pipedrive proxy)
     res.removeHeader('X-Frame-Options');
     res.removeHeader('Content-Security-Policy');
-    
+
     // Explicitly allow iframe embedding
     res.header('X-Frame-Options', 'ALLOWALL');
 
@@ -40,6 +40,33 @@ app.get('/manifest.json', (req, res) => {
 // Route for app.js (compiled bundle)
 app.get('/app.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'app.js'));
+});
+
+// HTTP Basic Auth middleware for JSON Panel
+function basicAuth(req, res, next) {
+    const auth = req.headers.authorization;
+    
+    if (!auth || !auth.startsWith('Basic ')) {
+        res.set('WWW-Authenticate', 'Basic realm="JSON Panel"');
+        return res.status(401).send('Authentication required');
+    }
+    
+    const credentials = Buffer.from(auth.slice(6), 'base64').toString().split(':');
+    const username = credentials[0];
+    const password = credentials[1];
+    
+    // Check credentials
+    if (username === 'pipedrive-plugin' && password === 'gus-panel-2025') {
+        next();
+    } else {
+        res.set('WWW-Authenticate', 'Basic realm="JSON Panel"');
+        return res.status(401).send('Invalid credentials');
+    }
+}
+
+// Protected route for JSON Panel configuration
+app.get('/nip-gus-panel.json', basicAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'nip-gus-panel.json'));
 });
 
 // Route for styles

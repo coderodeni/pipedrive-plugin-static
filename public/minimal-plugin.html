@@ -81,7 +81,7 @@
         function sendHeightToParent() {
             if (window.parent !== window) {
                 const height = 350;
-                
+
                 // Różne formaty komunikatów
                 window.parent.postMessage({ type: 'ready' }, '*');
                 window.parent.postMessage({ action: 'resize', height: height }, '*');
@@ -89,28 +89,28 @@
                 window.parent.postMessage({ type: 'setHeight', height: height }, '*');
                 window.parent.postMessage({ height: height }, '*');
                 window.parent.postMessage(height, '*');
-                
+
                 // Format dla Pipedrive App Extensions
                 window.parent.postMessage({
                     type: 'app-extension-ready',
                     height: height
                 }, '*');
-                
+
                 window.parent.postMessage({
                     action: 'app-extension-resize',
                     data: { height: height }
                 }, '*');
-                
+
                 console.log('Sent multiple height messages to parent:', height);
             }
         }
-        
+
         // Wyślij natychmiast
         sendHeightToParent();
-        
+
         // Wyślij ponownie po załadowaniu
         window.addEventListener('load', sendHeightToParent);
-        
+
         // Wyślij co sekundę przez pierwsze 10 sekund
         let attempts = 0;
         const interval = setInterval(() => {
