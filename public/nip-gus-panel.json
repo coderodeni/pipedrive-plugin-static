@@ -1,109 +1,42 @@
 {
-  "type": "panel",
-  "version": "1.0",
-  "components": [
+  "objects": [
+    {
+      "header": "🏛️ NIP Field z GUS",
+      "fields": [
         {
-            "type": "header",
-            "text": "🏛️ NIP Field z GUS"
+          "key": "description",
+          "label": "Opis",
+          "value": "Automatyczne pobieranie danych firmy z rejestru GUS na podstawie numeru NIP",
+          "type": "text"
         },
         {
-            "type": "text",
-            "text": "Automatyczne pobieranie danych firmy z rejestru GUS na podstawie numeru NIP",
-            "style": "muted"
+          "key": "nip_input",
+          "label": "Numer NIP",
+          "value": "",
+          "type": "text",
+          "placeholder": "Wprowadź 10-cyfrowy numer NIP"
         },
         {
-            "type": "spacer",
-            "size": "small"
-        },
-        {
-            "type": "input",
-            "id": "nip_input",
-            "label": "Numer NIP:",
-            "placeholder": "XXX-XXX-XX-XX",
-            "validation": {
-                "required": true,
-                "pattern": "^[0-9]{10}$|^[0-9]{3}-[0-9]{3}-[0-9]{2}-[0-9]{2}$",
-                "message": "Wprowadź prawidłowy numer NIP (10 cyfr)"
-            }
-        },
-        {
-            "type": "button",
-            "id": "fetch_button",
-            "text": "📊 Pobierz dane z GUS",
-            "style": "primary",
-            "action": {
-                "type": "http_request",
-                "method": "POST",
-                "url": "https://pipedrive-oauth-server.devikit.pl/api/json-panel/fetch-gus-data",
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "body": {
-                    "nip": "{{components.nip_input.value}}",
-                    "organization_id": "{{context.organization.id}}",
-                    "user_id": "{{context.user.id}}",
-                    "company_id": "{{context.company.id}}"
-                }
-            },
-            "loading_text": "Pobieranie danych z GUS...",
-            "disabled_when": "{{!components.nip_input.value}}"
-        },
-        {
-            "type": "spacer",
-            "size": "medium"
-        },
-        {
-            "type": "status",
-            "id": "status_indicator",
-            "text": "Wprowadź numer NIP i kliknij 'Pobierz dane z GUS'",
-            "status": "neutral"
-        },
-        {
-            "type": "spacer",
-            "size": "small"
-        },
-        {
-            "type": "text",
-            "text": "💡 Wskazówka: Po pobraniu danych nazwa i adres organizacji zostaną automatycznie zaktualizowane",
-            "style": "muted",
-            "size": "small"
+          "key": "status",
+          "label": "Status",
+          "value": "Gotowy do pobierania danych",
+          "type": "text"
         }
-    ],
-    "actions": [
+      ],
+      "actions": [
         {
-            "id": "fetch_gus_data",
-            "on_success": [
-                {
-                    "type": "update_component",
-                    "component_id": "status_indicator",
-                    "properties": {
-                        "text": "✅ Dane zostały pobrane z GUS i zaktualizowane",
-                        "status": "success"
-                    }
-                },
-                {
-                    "type": "clear_component",
-                    "component_id": "nip_input"
-                },
-                {
-                    "type": "refresh_context"
-                }
-            ],
-            "on_error": [
-                {
-                    "type": "update_component",
-                    "component_id": "status_indicator",
-                    "properties": {
-                        "text": "❌ Błąd podczas pobierania danych z GUS",
-                        "status": "error"
-                    }
-                }
-            ]
+          "label": "📊 Pobierz dane z GUS",
+          "type": "link",
+          "href": "https://pipedrive-oauth-server.devikit.pl/api/json-panel/fetch-gus-data"
         }
-    ],
-    "context": {
-        "organization": true,
-        "user": true,
-        "company": true
+      ]
     }
+  ],
+  "actions": [
+    {
+      "label": "📊 Pobierz dane z GUS",
+      "type": "link", 
+      "href": "https://pipedrive-oauth-server.devikit.pl/api/json-panel/fetch-gus-data"
+    }
+  ]
 }
