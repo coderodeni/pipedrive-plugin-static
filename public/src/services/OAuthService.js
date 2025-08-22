@@ -88,7 +88,10 @@ export class OAuthService {
       throw new Error('Nie można określić domeny firmy');
     }
 
-    const authUrl = `${this.oauthServerUrl}/auth/authorize?company_domain=${this.companyDomain}`;
+    // Zwróć użytkownika do aktualnej strony po autoryzacji
+    const currentUrl = window.location.href;
+    const encodedReturnUrl = encodeURIComponent(currentUrl);
+    const authUrl = `${this.oauthServerUrl}/auth/authorize?company_domain=${this.companyDomain}&return_url=${encodedReturnUrl}`;
     window.location.href = authUrl;
   }
 
