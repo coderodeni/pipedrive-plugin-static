@@ -1,62 +1,73 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>NIP Field z GUS</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 15px; 
+        html,
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
             background: white;
-            min-height: 300px;
+            height: 350px;
+            min-height: 350px;
+            max-height: 350px;
+            overflow: hidden;
         }
-        .container { 
-            border: 1px solid #ddd; 
-            padding: 20px; 
-            border-radius: 5px; 
+
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
         }
-        input { 
-            padding: 8px; 
-            margin: 5px 0; 
-            border: 1px solid #ccc; 
-            border-radius: 3px; 
+
+        input {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
             width: 200px;
         }
-        button { 
-            padding: 10px 15px; 
-            background: #007bff; 
-            color: white; 
-            border: none; 
-            border-radius: 3px; 
-            cursor: pointer; 
+
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
             margin: 5px 0;
         }
-        .status { 
-            padding: 10px; 
-            margin: 10px 0; 
-            border-radius: 3px; 
-            background: #d4edda; 
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            background: #d4edda;
             border: 1px solid #c3e6cb;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h3>🏢 NIP Field z GUS</h3>
-        
+
         <div class="status">
             ✅ Plugin został załadowany pomyślnie
         </div>
-        
+
         <div>
             <label>Numer NIP:</label><br>
             <input type="text" id="nip" placeholder="XXX-XXX-XX-XX" maxlength="12">
         </div>
-        
+
         <div>
             <button onclick="authorize()">🔐 Autoryzuj z Pipedrive</button>
         </div>
-        
+
         <div style="margin-top: 20px; font-size: 12px; color: #666;">
             <strong>Status:</strong> <span id="status">Gotowy</span><br>
             <strong>Session:</strong> <span id="session">Sprawdzanie...</span>
@@ -65,19 +76,56 @@
 
     <script>
         console.log('🚀 Minimal NIP Plugin loaded');
-        
-        // Natychmiast powiadom parent
-        if (window.parent !== window) {
-            window.parent.postMessage({ type: 'ready' }, '*');
-            window.parent.postMessage({ action: 'resize', height: 350 }, '*');
-            console.log('Sent ready signal to parent');
+
+        // Agresywna komunikacja wysokości
+        function sendHeightToParent() {
+            if (window.parent !== window) {
+                const height = 350;
+                
+                // Różne formaty komunikatów
+                window.parent.postMessage({ type: 'ready' }, '*');
+                window.parent.postMessage({ action: 'resize', height: height }, '*');
+                window.parent.postMessage({ type: 'resize', height: height }, '*');
+                window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+                window.parent.postMessage({ height: height }, '*');
+                window.parent.postMessage(height, '*');
+                
+                // Format dla Pipedrive App Extensions
+                window.parent.postMessage({
+                    type: 'app-extension-ready',
+                    height: height
+                }, '*');
+                
+                window.parent.postMessage({
+                    action: 'app-extension-resize',
+                    data: { height: height }
+                }, '*');
+                
+                console.log('Sent multiple height messages to parent:', height);
+            }
         }
         
+        // Wyślij natychmiast
+        sendHeightToParent();
+        
+        // Wyślij ponownie po załadowaniu
+        window.addEventListener('load', sendHeightToParent);
+        
+        // Wyślij co sekundę przez pierwsze 10 sekund
+        let attempts = 0;
+        const interval = setInterval(() => {
+            sendHeightToParent();
+            attempts++;
+            if (attempts >= 10) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
         // Sprawdź session
         const urlParams = new URLSearchParams(window.location.search);
         const sessionFromUrl = urlParams.get('nip_gus_session');
         const sessionId = localStorage.getItem('nip_gus_session_id');
-        
+
         if (sessionFromUrl) {
             localStorage.setItem('nip_gus_session_id', sessionFromUrl);
             document.getElementById('session').textContent = 'Nowa sesja zapisana';
@@ -89,39 +137,40 @@
             document.getElementById('session').textContent = 'Brak sesji';
             document.getElementById('status').textContent = 'Wymagana autoryzacja';
         }
-        
+
         // Format NIP
-        document.getElementById('nip').addEventListener('input', function(e) {
+        document.getElementById('nip').addEventListener('input', function (e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length > 10) value = value.substring(0, 10);
-            
+
             if (value.length > 6) {
                 value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6, 8) + '-' + value.substring(8);
             } else if (value.length > 3) {
                 value = value.substring(0, 3) + '-' + value.substring(3);
             }
-            
+
             e.target.value = value;
         });
-        
+
         // Autoryzacja
         function authorize() {
             console.log('🔐 Starting authorization...');
-            
+
             const hostname = window.location.hostname;
             const match = hostname.match(/^(.+)\.pipedrive\.com$/);
             const companyDomain = match ? match[1] : 'devispacespzoo-sandbox';
-            
+
             const currentUrl = window.location.href;
             const authUrl = `https://pipedrive-oauth-server.devikit.pl/auth/authorize?company_domain=${companyDomain}&return_url=${encodeURIComponent(currentUrl)}`;
-            
+
             console.log('Auth URL:', authUrl);
             document.getElementById('status').textContent = 'Przekierowywanie...';
-            
+
             window.top.location.href = authUrl;
         }
-        
+
         console.log('✅ Plugin ready');
     </script>
 </body>
+
 </html>
