@@ -1,20 +1,35 @@
-[
-    {
-        "id": 1,
-        "header": "🏛️ NIP Field z GUS",
-        "description": {
-            "value": "Automatyczne pobieranie danych firmy z rejestru GUS na podstawie numeru NIP",
-            "type": "text"
-        },
-        "nip_field": {
-            "value": "Wprowadź numer NIP organizacji",
-            "type": "text",
-            "label": "Numer NIP"
-        },
-        "status": {
-            "value": "Gotowy do pobierania danych",
-            "type": "text",
-            "label": "Status"
-        }
+{
+  "type": "object",
+  "required": [
+    "id",
+    "header"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/numerical"
+    },
+    "header": {
+      "$ref": "#/definitions/header"
+    },
+    "description": {
+      "$ref": "#/definitions/text",
+      "label": "Opis"
+    },
+    "nip_field": {
+      "$ref": "#/definitions/text",
+      "label": "Numer NIP"
+    },
+    "status": {
+      "$ref": "#/definitions/text",
+      "label": "Status"
+    },
+    "company_name": {
+      "$ref": "#/definitions/text",
+      "label": "Nazwa firmy"
+    },
+    "address": {
+      "$ref": "#/definitions/text",
+      "label": "Adres"
     }
-]
+  }
+}
