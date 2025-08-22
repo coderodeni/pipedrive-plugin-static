@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NIP Field z GUS</title>
-    
+
     <!-- Pipedrive SDK -->
     <script src="https://cdn.pipedrive.com/web-app/assets/sdk.js"></script>
-    
+
     <style>
         * {
             box-sizing: border-box;
@@ -181,35 +181,72 @@
 
     <script>
         console.log('🚀 NIP GUS Plugin starting...');
+        
+        // Natychmiast powiadom parent o ładowaniu
+        if (window.parent && window.parent !== window) {
+            console.log('Sending immediate ready signal to parent');
+            window.parent.postMessage({ type: 'ready', status: 'loading' }, '*');
+            window.parent.postMessage({ action: 'ready' }, '*');
+            window.parent.postMessage('ready', '*');
+        }
 
-        // Komunikacja z parent window (Pipedrive)
+                // Komunikacja z parent window (Pipedrive)
         function notifyParent(message) {
             try {
                 if (window.parent && window.parent !== window) {
+                    console.log('Sending message to parent:', message);
                     window.parent.postMessage(message, '*');
+                    
+                    // Spróbuj też innych formatów komunikacji
+                    window.parent.postMessage({
+                        type: 'app-extension-ready',
+                        ...message
+                    }, '*');
+                    
+                    // Format dla Pipedrive App Extensions
+                    window.parent.postMessage({
+                        action: 'resize',
+                        data: { height: message.height || 450 }
+                    }, '*');
                 }
             } catch (e) {
                 console.log('Cannot communicate with parent:', e);
             }
         }
-
+        
         // Ustaw wysokość iframe
         function setIframeHeight(height) {
             document.body.style.height = height + 'px';
+            document.body.style.minHeight = height + 'px';
+            document.documentElement.style.height = height + 'px';
+            
+            // Wyślij różne formaty komunikatów o wysokości
             notifyParent({
                 type: 'resize',
                 height: height
             });
+            
+            notifyParent({
+                type: 'setHeight',
+                height: height
+            });
+            
+            // Format dla niektórych iframe systemów
+            if (window.parent && window.parent.postMessage) {
+                window.parent.postMessage(height, '*');
+            }
+            
             document.getElementById('iframe-height').textContent = height;
+            console.log('Set iframe height to:', height);
         }
 
-                // Inicjalizacja Pipedrive SDK
+        // Inicjalizacja Pipedrive SDK
         function initPipedriveSDK() {
             return new Promise((resolve, reject) => {
                 if (typeof PipedriveApp !== 'undefined') {
                     console.log('🔧 Initializing Pipedrive SDK...');
                     window.pipedrive = new PipedriveApp();
-                    
+
                     pipedrive.initialize().then(() => {
                         console.log('✅ Pipedrive SDK initialized');
                         resolve(pipedrive);
@@ -223,11 +260,11 @@
                 }
             });
         }
-        
+
         // Inicjalizacja
         async function init() {
             console.log('🔧 Initializing plugin...');
-            
+
             try {
                 // Inicjalizuj Pipedrive SDK
                 await initPipedriveSDK();
@@ -236,7 +273,7 @@
                 console.warn('Pipedrive SDK initialization failed, continuing without it');
                 updateStatus('Plugin działa bez Pipedrive SDK', 'warning');
             }
-            
+
             // Ustaw wysokość
             setIframeHeight(450);
 
