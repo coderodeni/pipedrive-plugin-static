@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIP GUS Plugin</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: white;
+            min-height: 300px;
+        }
+        .plugin-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 20px;
+        }
+        .plugin-header {
+            color: #007bff;
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .status-ok {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .nip-field {
+            margin: 15px 0;
+        }
+        .nip-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .nip-field input {
+            width: 200px;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .auth-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .auth-button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="plugin-container">
+        <h3 class="plugin-header">🎯 NIP Field z GUS</h3>
+        
+        <div class="status-ok">
+            ✅ Plugin został pomyślnie załadowany w iframe
+        </div>
+        
+        <div class="nip-field">
+            <label for="nip-input">Numer NIP:</label>
+            <input type="text" id="nip-input" placeholder="XXX-XXX-XX-XX" maxlength="12">
+        </div>
+        
+        <button class="auth-button" onclick="handleAuth()">
+            🔐 Autoryzuj z Pipedrive
+        </button>
+        
+        <div id="debug-info" style="margin-top: 20px; font-size: 12px; color: #6c757d;">
+            <strong>Debug Info:</strong><br>
+            URL: <span id="current-url"></span><br>
+            Session: <span id="session-info"></span>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Simple test plugin loaded');
+        
+        // Aktualizuj debug info
+        document.getElementById('current-url').textContent = window.location.href;
+        
+        // Sprawdź session
+        const sessionId = localStorage.getItem('nip_gus_session_id');
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionFromUrl = urlParams.get('nip_gus_session');
+        
+        let sessionInfo = 'Brak';
+        if (sessionFromUrl) {
+            sessionInfo = `URL: ${sessionFromUrl.substring(0, 15)}...`;
+            localStorage.setItem('nip_gus_session_id', sessionFromUrl);
+            
+            // Usuń z URL
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.delete('nip_gus_session');
+            window.history.replaceState({}, '', newUrl);
+        } else if (sessionId) {
+            sessionInfo = `Saved: ${sessionId.substring(0, 15)}...`;
+        }
+        
+        document.getElementById('session-info').textContent = sessionInfo;
+        
+        // Format NIP podczas pisania
+        document.getElementById('nip-input').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.substring(0, 10);
+            
+            if (value.length > 6) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6, 8) + '-' + value.substring(8);
+            } else if (value.length > 3) {
+                value = value.substring(0, 3) + '-' + value.substring(3);
+            }
+            
+            e.target.value = value;
+        });
+        
+        // Funkcja autoryzacji
+        function handleAuth() {
+            console.log('🔐 Auth button clicked');
+            
+            const hostname = window.location.hostname;
+            const match = hostname.match(/^(.+)\.pipedrive\.com$/);
+            const companyDomain = match ? match[1] : null;
+            
+            if (companyDomain) {
+                const currentUrl = window.location.href;
+                const authUrl = `https://pipedrive-oauth-server.devikit.pl/auth/authorize?company_domain=${companyDomain}&return_url=${encodeURIComponent(currentUrl)}`;
+                
+                console.log('Redirecting to:', authUrl);
+                window.top.location.href = authUrl; // Użyj window.top dla iframe
+            } else {
+                alert('Nie można określić domeny firmy');
+            }
+        }
+        
+        // Dodaj do globalnego scope
+        window.handleAuth = handleAuth;
+        
+        console.log('✅ Plugin initialization complete');
+    </script>
+</body>
+</html>
